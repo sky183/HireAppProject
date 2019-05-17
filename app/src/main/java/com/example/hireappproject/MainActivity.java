@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mWebView.loadUrl("http://192.168.0.10/academy/hire/notify");
+        mWebView.loadUrl("http://192.168.35.115/academy/hire/notify");
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -251,10 +251,10 @@ public class MainActivity extends AppCompatActivity {
     private void runCamera(boolean _isCapture)
     {
         Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intentCamera.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         File path = getFilesDir();
-        File file = new File(path, "sample.jpg");
+        File file = new File(path, "fokCamera.png");
         // File 객체의 URI 를 얻는다.
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
         {
@@ -265,7 +265,6 @@ public class MainActivity extends AppCompatActivity {
         {
             cameraImageUri = Uri.fromFile(file);
         }
-
         intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri);
 
         if (!_isCapture)
