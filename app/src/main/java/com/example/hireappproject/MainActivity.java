@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mWebView.loadUrl("http://192.168.35.115/academy/hire/notify");
+        mWebView.loadUrl("http://192.168.0.10/academy/hire/notify");
     }
 
     @TargetApi(Build.VERSION_CODES.M)
