@@ -27,7 +27,7 @@ import android.webkit.WebViewClient;
 
 import java.io.File;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity2 extends AppCompatActivity {
 
     private WebView mWebView;
     private WebSettings mWebSettings;
@@ -254,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
         //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         File path = getFilesDir();
-        File file = new File(path, "sample.jpg");
+        File file = new File(path, "fokCamera.jpg");
         // File 객체의 URI 를 얻는다.
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
         {
@@ -265,7 +265,6 @@ public class MainActivity extends AppCompatActivity {
         {
             cameraImageUri = Uri.fromFile(file);
         }
-
         intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri);
 
         if (!_isCapture)
