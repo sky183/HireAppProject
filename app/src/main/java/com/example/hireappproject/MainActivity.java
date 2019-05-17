@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
     private void runCamera(boolean _isCapture)
     {
         Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intentCamera.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         File path = getFilesDir();
         File file = new File(path, "sample.jpg");
