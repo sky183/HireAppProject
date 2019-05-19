@@ -24,6 +24,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import java.io.File;
 
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     private WebView mWebView;
     private WebSettings mWebSettings;
+
     public ValueCallback<Uri> filePathCallbackNormal;
     public ValueCallback<Uri[]> filePathCallbackLollipop;
     public final static int FILECHOOSER_NORMAL_REQ_CODE = 2001;
@@ -44,10 +46,11 @@ public class MainActivity extends AppCompatActivity {
 
         mWebView = (WebView) findViewById(R.id.webview);
 
+        // 각종 권한 획득
         checkVerify();
 
         mWebSettings = mWebView.getSettings();
-        mWebSettings.setJavaScriptEnabled(true);
+        mWebSettings.setJavaScriptEnabled(true); //자바스크립트 허용
 
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
@@ -57,7 +60,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // WebView의 setWebChromeClient 셋팅 및 Input 선택기 구현
         mWebView.setWebChromeClient(new WebChromeClient() {
+
+            // 자바스크립트의 alert창
             @Override
             public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
                 new AlertDialog.Builder(view.getContext())
@@ -99,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
 
-            // For Android 5.0+ 카메라
+            // For Android 5.0+ 카메라 - input type="file" 태그를 선택했을 때 반응
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             public boolean onShowFileChooser(
                     WebView webView, ValueCallback<Uri[]> filePathCallback,
@@ -119,9 +125,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mWebView.loadUrl("http://192.168.0.10/academy/hire/notify");
+        // 사용자의 웹뷰에 띄울 웹페이지 주소
+        mWebView.loadUrl("http://192.168.35.115/academy/hire/notify");
     }
 
+    // 뒤로가기 구현
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (mWebView.canGoBack()) {
+                mWebView.goBack();
+                return false;
+            }
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    //권한 획득 여부 확인
     @TargetApi(Build.VERSION_CODES.M)
     public void checkVerify() {
 
@@ -141,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //권한 획득 여부에 따른 결과 반환
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
@@ -154,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     if (grantResults[i] == PackageManager.PERMISSION_DENIED)
                     {
-                        // 하나라도 거부한다면.
+                        // 카메라, 저장소 중 하나라도 거부한다면 앱실행 불가 메세지 띄움
                         new AlertDialog.Builder(this).setTitle("알림").setMessage("권한을 허용해주셔야 앱을 이용할 수 있습니다.")
                                 .setPositiveButton("종료", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
@@ -173,32 +195,16 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                 }
-                //Toast.makeText(this, "Succeed Read/Write external storage !", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Succeed Read/Write external storage !", Toast.LENGTH_SHORT).show();
                 //startApp();
             }
         }
     }
 
-
-    // 뒤로가기 구현
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mWebView.canGoBack()) {
-                mWebView.goBack();
-                return false;
-            }
-        }
-
-        return super.onKeyDown(keyCode, event);
-    }
-
-
-
+    //액티비티가 종료될 때 결과를 받고 파일을 전송할 때 사용
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode)
         {
@@ -207,6 +213,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     if (filePathCallbackNormal == null) return;
                     Uri result = (data == null || resultCode != RESULT_OK) ? null : data.getData();
+                    //  onReceiveValue 로 파일을 전송한다.
                     filePathCallbackNormal.onReceiveValue(result);
                     filePathCallbackNormal = null;
                 }
@@ -226,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
                 else
                 {
                     if (filePathCallbackLollipop != null)
-                    {
+                    {   //  resultCode에 RESULT_OK가 들어오지 않으면 null 처리하지 한다.(이렇게 하지 않으면 다음부터 input 태그를 클릭해도 반응하지 않음)
                         filePathCallbackLollipop.onReceiveValue(null);
                         filePathCallbackLollipop = null;
                     }
@@ -254,12 +261,12 @@ public class MainActivity extends AppCompatActivity {
         //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         File path = getFilesDir();
-        File file = new File(path, "fokCamera.png");
+        File file = new File(path, "sample.png"); // sample.png 는 카메라로 찍었을 때 저장될 파일명이므로 사용자 마음대로
         // File 객체의 URI 를 얻는다.
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
         {
             String strpa = getApplicationContext().getPackageName();
-            cameraImageUri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".fileprovider", file);
+            cameraImageUri = FileProvider.getUriForFile(this, strpa + ".fileprovider", file);
         }
         else
         {
@@ -268,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
         intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri);
 
         if (!_isCapture)
-        { // 선택팝업 카메라, 갤러리 둘다 띄우고 싶을 때..
+        { // 선택팝업 카메라, 갤러리 둘다 띄우고 싶을 때
             Intent pickIntent = new Intent(Intent.ACTION_PICK);
             pickIntent.setType(MediaStore.Images.Media.CONTENT_TYPE);
             pickIntent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.hireappproject">
+    <!--인터넷 퍼미션-->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!--네트워크 상태 퍼미션-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <!-- 카메라 퍼미션 -->
     <uses-permission android:name="android.permission.CAMERA" />
@@ -10,6 +12,12 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="18"/>
     <!-- 외부 저장소 사용 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!--android os 9 pie 버전부터 "http://" url 사용을 위한 보안설정 필요-->
+    <!--android:networkSecurityConfig="@xml/network_security_config" appication 태그에 삽입-->
+
+    <!--가로 세로 모드 변경돼도 새로 로딩하지 않도록 함 -->
+    <!--android:configChanges="orientation|keyboardHidden|screenSize" appication 태그에 삽입-->
 
     <application
         android:allowBackup="true"
